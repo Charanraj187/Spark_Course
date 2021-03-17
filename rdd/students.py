@@ -37,7 +37,7 @@ if __name__ == '__main__':
     demographics_pair_rdd = Std_demo_rdd \
         .map(lambda line: line.split(",")) \
         .filter(lambda line: 'Country' != line[4]) \
-        .map(lambda lst: (str(lst[0]), int(lst[1]), (lst[2]), strtobool(lst[3]), (lst[4]), (lst[5]), strtobool(lst[6]), int(lst[7])))
+        .map(lambda lst: (str(lst[0]), int(lst[1]), int(lst[2]), strtobool(lst[3]), str(lst[4]), (lst[5]), strtobool(lst[6]), (lst[7]), (lst[8])))
 
     finances_pair_rdd = Std_fin_rdd \
         .map(lambda line: line.split(",")) \
