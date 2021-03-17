@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
     finances_pair_rdd = Std_fin_rdd \
         .map(lambda line: line.split(",")) \
-        .filter(lambda line: 'Amount' != line[4])
+        .filter(lambda line: 'Amount' != line[4]) \
         .map(lambda lst: (str(lst[0]), int(lst[1]), strtobool(lst[2]), strtobool(lst[3]), int(lst[4])))
 
     join_pair_rdd = demographics_pair_rdd.cartesian(finances_pair_rdd)\
