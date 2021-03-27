@@ -34,7 +34,7 @@ if __name__ == '__main__':
         .add("City_Name", StringType(), True) \
         .add("Crime_Name", StringType(), True) \
         .add("Damages", StringType(), True) \
-        .add("Case_Code", IntegerType(), True)
+        .add("Case_Code", IntegerType(), True) \
         .add("Year", IntegerType(), True) \
         .add("Case_Code", IntegerType(), True)
 
