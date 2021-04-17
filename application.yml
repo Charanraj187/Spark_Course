@@ -1,25 +1,59 @@
-s3_conf:
-  s3_bucket: anu-buckets
+source_data_list:
+  - CP
 
-sftp_conf:
+target_data_list:
+  - REGIS_DIM
+
+SB:
+  mysql_conf:
+    dbtable: anudb.TRANSACTIONSYNC
+    partition_column: App_Transaction_Id
+    #query : "(select * from anudb.TRANSACTIONSYNC where Internal_Member_Id = 'PC7135361') as t"
+
+OL:
+  sftp_conf:
     filetype: csv
     delimiter: |
     directory: /home/ubuntu/data
+    filename: receipts_delta_GBR_14_10_2017.csv
 
-mysql_conf:
-  dbtable: anudb.TRANSACTIONSYNC
-  partition_column: App_Transaction_Id
-  query : "(select * from anudb.TRANSACTIONSYNC where Internal_Member_Id = 'PC7135361') as t"
+CP:
+  s3_conf:
+    s3_bucket: charanraj-bucket
+    filename: KC_Extract_1_20171009.csv
+  redshift_conf:
+    filetype: csv
+    delimiter: |
+    dbtable: PUBLIC.TXN_FCT
+    #query: SELECT txn_id, create_time, amount, cust_id from PUBLIC.TXN_FCT
 
-mongodb_config:
-  database: school
-  collection: students
+addr:
+  s3_conf:
+    s3_bucket: charanraj-bucket
+    filename: KC_Extract_1_20171009.csv
+  mongodb_config:
+    database: school
+    collection: students
+    database: customers
+    collection: address
 
-redshift_conf:
-  filetype: csv
-  delimiter: |
-  dbtable: PUBLIC.TXN_FCT
-  query: SELECT txn_id, create_time, amount, cust_id from PUBLIC.TXN_FCT
+REGIS_DIM:
+  tableName: DATAMART.REGIS_DIM
+  sourceTable:
+    - CP
+  loadingQuery: >
+            SELECT
+               DATAMART.FN_UUID() AS REGIS_KEY, REGIS_CNSM_ID AS CNSM_ID,REGIS_CTY_CODE AS CTY_CODE,
+               REGIS_ID, REGIS_DATE, REGIS_LTY_ID AS LTY_ID, REGIS_CHANNEL, REGIS_GENDER, REGIS_CITY, INS_TS
+              FROM
+                (SELECT
+                   DISTINCT REGIS_CNSM_ID, CAST(REGIS_CTY_CODE AS SMALLINT), CAST(REGIS_ID AS INTEGER),
+                   REGIS_LTY_ID, REGIS_DATE, REGIS_CHANNEL, REGIS_GENDER, REGIS_CITY, INS_TS
+                FROM
+                  staging_STG_1CP
+                WHERE
+                  CAST(INS_TS AS DATE) = CURRENT_DATE
+                ) CP
 
 spark_sql_demo:
   agg_demo: >
@@ -44,3 +78,7 @@ spark_sql_demo:
         end as Tier
     from
         employees
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+s3_conf:
+  s3_bucket: anu-buckets
